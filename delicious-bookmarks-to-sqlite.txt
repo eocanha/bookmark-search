@@ -1,0 +1,86 @@
+function isEmpty(obj) {
+ for (var prop in obj) {
+  if (obj.hasOwnProperty(prop))
+   return false;
+ }
+ return JSON.stringify(obj) === JSON.stringify({});
+}
+
+function sanitize(str) {
+    if (typeof str != 'string')
+        return str;
+
+    return str.replace(/'/g, "''");
+}
+
+var dl = document.getElementsByTagName("dl")[0];
+var element = dl.firstElementChild;
+var links = [];
+var link = {}; // Title, url, tags, comment, add_date, private
+var tags = {};
+
+while (element) {
+ switch (element.tagName) {
+ case 'DT':
+  if (!isEmpty(link)) {
+   if (!link.comment) {
+    link.comment = "";
+   }
+   links.push(link);
+   link = {};
+  }
+  var a = element.getElementsByTagName("a")[0];
+  link.title = sanitize(a.innerText);
+  link.url = a.href;
+  link.tags = sanitize(a.getAttribute("tags")).split(",");
+  for (var i in link.tags) {
+   tags[link.tags[i]] = link.tags[i];
+  }
+  link.add_date = a.getAttribute("add_date");
+  link.private = a.getAttribute("private");
+  break;
+ case 'DD':
+  link.comment = sanitize(element.innerText);
+  break;
+ default:
+ }
+ element = element.nextElementSibling;
+}
+
+if (!isEmpty(link)) {
+ links.push(link);
+}
+
+var tmp = [];
+for (var i in tags) {
+ tmp.push(i);
+}
+tags = tmp;
+
+// Title, url, tags, comment, add_date, private
+var sql = "\
+create table links (\n\
+ id integer primary key,\n\
+ title text,\n\
+ url text,\n\
+ tags text,\n\
+ comment text,\n\
+ add_date integer,\n\
+ private integer\n\
+);\n\n\
+";
+
+for (var i in links) {
+ var link = links[i];
+ var row = "\
+  insert into links (title,url,tags,comment,add_date,private)\n\
+  values ('"+link.title+"','"+link.url+"','"+link.tags+"',\
+  '"+(link.comment ? link.comment : "")+"',"+link.add_date+","+link.private+");\n"
+ sql += row;
+}
+
+var text = document.createElement("pre");
+text.innerText = sql;
+
+var body = document.getElementsByTagName("body")[0].innerHTML = text.innerHTML;
+

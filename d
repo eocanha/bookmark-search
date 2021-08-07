@@ -7,11 +7,12 @@ PATTERN="$1"
 
 if [ "${PATTERN}" != "" ]
 then
- sqlite3 "${DB}" '.mode lines' 'select title,url,tags,comment from links where
+ sqlite3 "${DB}" '.mode lines' 'select title,url,tags,datetime(add_date, '\''unixepoch'\'') as date,comment from links where
   tags like '\'"${PATTERN}"\'' or
   tags like '\'"${PATTERN}"',%'\'' or
   tags like '\''%,'"${PATTERN}"',%'\'' or
-  tags like '\''%,'"${PATTERN}"\'';' | less
+  tags like '\''%,'"${PATTERN}"\''
+  order by date desc;' | less
 else
  read -p "url: " -e URL
  ID=$(sqlite3 "${DB}" "select id from links where url='${URL}';")
@@ -28,8 +29,8 @@ else
 
  if [ -n "${ID}" ]
  then
-  sqlite3 "${DB}" "update links set title='${TITLE}', tags='${TAGS}', comment='${COMMENT}' where id=${ID}"
+  sqlite3 "${DB}" "update links set title='${TITLE}', tags='${TAGS}', comment='${COMMENT}', add_date='$(date +%s)' where id=${ID}"
  else
-  sqlite3 "${DB}" "insert into links (url,title,tags,comment) values ('${URL}','${TITLE}','${TAGS}','${COMMENT}')"
+  sqlite3 "${DB}" "insert into links (url,title,tags,comment) values ('${URL}','${TITLE}','${TAGS}','${COMMENT}','$(date +%s)')"
  fi
 fi

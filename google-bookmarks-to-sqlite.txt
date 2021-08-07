@@ -1,0 +1,75 @@
+function isEmpty(obj) {
+ for (var prop in obj) {
+  if (obj.hasOwnProperty(prop))
+   return false;
+ }
+ return JSON.stringify(obj) === JSON.stringify({});
+}
+
+function sanitize(str) {
+    if (typeof str != 'string')
+        return str;
+
+    return str.replace(/'/g, "''");
+}
+
+var linksKeys = []; // URL used as key
+var links = {}; // Map of url: link
+
+[...document.querySelectorAll("body > dl > dt")].forEach(function(tagElement) {
+  var tag = tagElement.querySelector("h3").innerText;
+  tagElement.querySelector("dl").querySelectorAll("dl > dt").forEach(function(dtElement) {
+    var a = dtElement.querySelector("a");
+    var link = {
+      title: sanitize(a.innerText),
+      url: a.href,
+      tags: [ tag ],
+      // UNIX epoch in seconds. Use "select datetime(1511863293, 'unixepoch')"
+      // to get a readable date in sqlite.
+      add_date: Math.floor(a.getAttribute('add_date') / 1000000),
+      comment: ''
+    };
+    
+    // Get optional comment
+    var maybeDdElement = dtElement.nextElementSibling;
+    if (maybeDdElement && maybeDdElement.tagName == 'DD') {
+      link.comment = sanitize(maybeDdElement.innerText);
+    }
+    
+    // Merge tags of preexisting link
+    var existingLink = links[link.url];
+    if (existingLink) {
+      var existingTags = existingLink.tags;
+      link.tags = existingLink.tags.concat(link.tags);
+    } else {
+      linksKeys.push(link.url);
+    }
+    links[link.url] = link;
+  });
+});
+
+// Title, url, tags, comment, add_date, private
+var sql = "\
+create table links (\n\
+ id integer primary key,\n\
+ title text,\n\
+ url text,\n\
+ tags text,\n\
+ comment text,\n\
+ add_date integer\n\
+);\n\n\
+";
+
+for (var i in links) {
+ var link = links[i];
+ var row = "\
+  insert into links (title,url,tags,comment,add_date)\n\
+  values ('"+link.title+"','"+link.url+"','"+link.tags+"',\
+  '"+(link.comment ? link.comment : "")+"',"+link.add_date+");\n"
+ sql += row;
+}
+
+var body = document.body.innerHTML = '';
+var text = document.createElement("pre");
+text.innerText = sql;
+document.body.append(text);

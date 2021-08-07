@@ -16,7 +16,7 @@ function sanitize(str) {
 var dl = document.getElementsByTagName("dl")[0];
 var element = dl.firstElementChild;
 var links = [];
-var link = {}; // Title, url, tags, comment, add_date, private
+var link = {}; // Title, url, tags, comment, add_date
 var tags = {};
 
 while (element) {
@@ -37,7 +37,6 @@ while (element) {
    tags[link.tags[i]] = link.tags[i];
   }
   link.add_date = a.getAttribute("add_date");
-  link.private = a.getAttribute("private");
   break;
  case 'DD':
   link.comment = sanitize(element.innerText);
@@ -57,7 +56,7 @@ for (var i in tags) {
 }
 tags = tmp;
 
-// Title, url, tags, comment, add_date, private
+// Title, url, tags, comment, add_date
 var sql = "\
 create table links (\n\
  id integer primary key,\n\
@@ -65,17 +64,16 @@ create table links (\n\
  url text,\n\
  tags text,\n\
  comment text,\n\
- add_date integer,\n\
- private integer\n\
+ add_date integer\n\
 );\n\n\
 ";
 
 for (var i in links) {
  var link = links[i];
  var row = "\
-  insert into links (title,url,tags,comment,add_date,private)\n\
+  insert into links (title,url,tags,comment,add_date)\n\
   values ('"+link.title+"','"+link.url+"','"+link.tags+"',\
-  '"+(link.comment ? link.comment : "")+"',"+link.add_date+","+link.private+");\n"
+  '"+(link.comment ? link.comment : "")+"',"+link.add_date+");\n"
  sql += row;
 }
 

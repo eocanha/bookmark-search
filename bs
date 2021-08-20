@@ -27,10 +27,14 @@ else
  read -p "tags: " -i "${TAGS}" -e TAGS
  read -p "comment: " -i "${COMMENT}" -e COMMENT
 
+ TITLE=$(echo "${TITLE}" | sed -e "s/'/''/g")
+ TAGS=$(echo "${TAGS}" | sed -e "s/'/''/g")
+ COMMENT=$(echo "${COMMENT}" | sed -e "s/'/''/g")
+
  if [ -n "${ID}" ]
  then
   sqlite3 "${DB}" "update links set title='${TITLE}', tags='${TAGS}', comment='${COMMENT}', add_date='$(date +%s)' where id=${ID}"
  else
-  sqlite3 "${DB}" "insert into links (url,title,tags,comment) values ('${URL}','${TITLE}','${TAGS}','${COMMENT}','$(date +%s)')"
+  sqlite3 "${DB}" "insert into links (url,title,tags,comment,add_date) values ('${URL}','${TITLE}','${TAGS}','${COMMENT}','$(date +%s)')"
  fi
 fi

@@ -136,6 +136,7 @@ if (!is_null($pattern)) {
 }
 
 if (!empty($save)) {
+  $tags = preg_replace('/ *, */', ',', strtolower($tags));
   if (!empty($id)) {
     $statement = $db->prepare('
       update links set

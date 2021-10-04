@@ -199,7 +199,7 @@ if (empty($record)) {
     </div>
 
     <form>
-      <input class="searchbox" type="text" name="pattern" value="<?= $pattern ?>"/>
+      <input class="searchbox" type="text" name="pattern" value="<?= $pattern ?>" autofocus />
       <input type="submit" value="&#x1f50D;"/>
       <input type="button" value="&#x1f516;" onclick="javascript:createBookmarkHowto();"/>
     </form>
@@ -280,7 +280,7 @@ if (!empty($record) && $action != "delete") {
       </tr>
       <tr>
         <td>Tags:</td>
-        <td><input class="edit-field" type="text" name="tags"
+        <td><input class="edit-field" type="text" name="tags" autofocus
              value="<?= htmlspecialchars($record["tags"]) ?>"/></td>
       </tr>
       <tr>

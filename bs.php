@@ -23,6 +23,19 @@ function url(){
      window.location=actionUrl;
    }
  }
+
+ function copyTags(tagsSpanId) {
+   var tagsSpan = document.getElementById(tagsSpanId);
+   if (tagsSpan) {
+     var textArea = document.createElement("textarea");
+     textArea.value = tagsSpan.textContent;
+     document.body.appendChild(textArea);
+     textArea.select();
+     textArea.setSelectionRange(0, 99999); // For mobile devices
+     document.execCommand("copy");
+     textArea.remove();
+   }
+ }
  </script>
 
  <style>
@@ -222,16 +235,18 @@ if (!empty($matches)) {
        &nbsp;-&nbsp;
        <span class="date"><?= $row["date"] ?></span>
        <br/>
-       <span class="tags">[<?php
+       <span class="tags">[<span id="<?= "tags-" . $row["id"] ?>"><?php
     foreach (explode(",", $row["tags"]) as $i => $tag) {
        ?><?= $i ? ", " : ""?><a class="tags" href="?pattern=<?= urlencode($tag) ?>"><?= htmlspecialchars($tag) ?></a><?php
     }
-       ?>]</span>
+       ?></span>]</span>
        &nbsp;-&nbsp;
        <span class="actions">
-        <a class="actions" href="?action=edit&id=<?= $row["id"] ?>">Edit</a>
+        <a class="actions" href="?action=edit&id=<?= $row["id"] ?>">Edit</a> ·
         <a class="actions" href="#"
-         onclick="javascript:confirmDeletion('?action=delete&id=<?= $row["id"] ?>')">Delete</a>
+         onclick="javascript:confirmDeletion('?action=delete&id=<?= $row["id"] ?>')">Delete</a> ·
+        <a class="actions" href="#"
+         onclick="javascript:copyTags('<?= "tags-" . $row["id"] ?>')">Copy tags</a>
        </span>
 
 <?php

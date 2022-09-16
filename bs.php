@@ -260,8 +260,6 @@ if (!empty($matches)) {
     }
 ?>
       </td>
-      <td style="width: 150px">
-      </td>
     </tr>
 <?php
   }

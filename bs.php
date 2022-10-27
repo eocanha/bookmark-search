@@ -109,6 +109,20 @@ error_reporting(-1);
 
 $db=new SQLite3(dirname(__FILE__) . "/bookmarks.sqlite");
 
+// Create empty DB if needed
+$statement = $db->prepare('
+ create table if not exists links (
+  id integer primary key,
+  title text,
+  url text,
+  tags text,
+  comment text,
+  add_date integer
+ );
+');
+$result = $statement->execute();
+$result->finalize();
+
 foreach (["pattern", "action", "id", "title", "url", "tags", "comment", "save"] as $parameter) {
   ${$parameter} = (isset($_GET[$parameter])) ? $_GET[$parameter] : null;
 }

@@ -223,6 +223,12 @@ if (empty($record)) {
 if (!empty($matches)) {
 ?>
   <table class="match">
+    <tr>
+     <td></td>
+     <td>
+      <?= count($matches) ?> results
+     </td>
+    </tr>
 <?php
   foreach ($matches as $row) {
 ?>

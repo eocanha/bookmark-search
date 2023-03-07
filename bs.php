@@ -167,7 +167,7 @@ if (!empty($save)) {
   if (!empty($id)) {
     $statement = $db->prepare('
       update links set
-      title=:title, url=:url, tags=:tags, add_date=strftime(\'%s\', \'now\'), comment=:comment
+      title=:title, url=:url, tags=:tags, comment=:comment
       where
         id = :id;');
   } else {

@@ -108,6 +108,7 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 
 $db=new SQLite3(dirname(__FILE__) . "/bookmarks.sqlite");
+$db->busyTimeout(5000);
 
 // Create empty DB if needed
 $statement = $db->prepare('

@@ -8,6 +8,11 @@ function url(){
   return $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 }
 
+// Manage null strings to keep backwards compatibility
+function _htmlspecialchars($string) {
+  return htmlspecialchars($string ?? '');
+}
+
 ?><html>
 <head>
  <script>
@@ -250,15 +255,15 @@ if (!empty($matches)) {
     <tr>
       <td style="text-align: right;">&#11088;</td>
       <td>
-       <span class="link"><a class="link" href="<?= $row["url"] ?>"><?= htmlspecialchars($row["title"]) ?></a></span>
+       <span class="link"><a class="link" href="<?= $row["url"] ?>"><?= _htmlspecialchars($row["title"]) ?></a></span>
        &nbsp;-&nbsp;
-       <span class="site"><?= htmlspecialchars(parse_url($row["url"], PHP_URL_HOST)) ?></span>
+       <span class="site"><?= _htmlspecialchars(parse_url($row["url"], PHP_URL_HOST)) ?></span>
        &nbsp;-&nbsp;
        <span class="date"><?= $row["date"] ?></span>
        <br/>
        <span class="tags">[<span id="<?= "tags-" . $row["id"] ?>"><?php
     foreach (explode(",", $row["tags"]) as $i => $tag) {
-       ?><?= $i ? ", " : ""?><a class="tags" href="?pattern=<?= urlencode($tag) ?>"><?= htmlspecialchars($tag) ?></a><?php
+       ?><?= $i ? ", " : ""?><a class="tags" href="?pattern=<?= urlencode($tag) ?>"><?= _htmlspecialchars($tag) ?></a><?php
     }
        ?></span>]</span>
        &nbsp;-&nbsp;
@@ -275,7 +280,7 @@ if (!empty($matches)) {
        ?>
        <br/>
        <span class="comment">
-         <?= !empty($row["comment"]) ? htmlspecialchars($row["comment"]) : ""?>
+         <?= !empty($row["comment"]) ? _htmlspecialchars($row["comment"]) : ""?>
        </span>
 <?php
     }
@@ -305,22 +310,22 @@ if (!empty($record) && $action != "delete") {
       <tr>
         <td>Name:</td>
         <td><input class="edit-field" type="text" name="title"
-             value="<?= htmlspecialchars($record["title"]) ?>"/></td>
+             value="<?= _htmlspecialchars($record["title"]) ?>"/></td>
       </tr>
       <tr>
         <td>Link (URL):</td>
         <td><input class="edit-field" type="text" name="url"
-             value="<?= htmlspecialchars($record["url"]) ?>"/></td>
+             value="<?= _htmlspecialchars($record["url"]) ?>"/></td>
       </tr>
       <tr>
         <td>Tags:</td>
         <td><input class="edit-field" type="text" name="tags" autofocus
-             value="<?= htmlspecialchars($record["tags"]) ?>"/></td>
+             value="<?= _htmlspecialchars($record["tags"]) ?>"/></td>
       </tr>
       <tr>
         <td style="vertical-align: top; padding-top: 3px;">Notes:</td>
         <td><textarea class="edit-field" rows="4" name="comment"><?=
-          htmlspecialchars($record["comment"])
+          _htmlspecialchars($record["comment"])
         ?></textarea></td>
       </tr>
       <tr>
@@ -333,7 +338,7 @@ if (!empty($record) && $action != "delete") {
           <br/>
           <input type="submit" name="save" value="Save"/>
           <input type="button" value="Return to page"
-           onclick="javascript:location.replace('<?= htmlspecialchars($record["url"]) ?>');"/>
+           onclick="javascript:location.replace('<?= _htmlspecialchars($record["url"]) ?>');"/>
           <input type="button" value="Go to bookmark search list"
            onclick="javascript:window.location='?'"/>
         </td>
